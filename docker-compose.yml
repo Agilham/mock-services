@@ -87,8 +87,6 @@ services:
     build:
       context: ./PineValleyService
     container_name: willow-gardens
-    volumes:
-      - ./PineValleyService:/app
     networks:
       - kong-net
     ports:
