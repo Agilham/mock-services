@@ -36,6 +36,6 @@ object main {
 
     println(system.settings.config.getString("akka.http.server.log-unmatched-routes"))
     val port = config.getInt("server.port")
-    val bindingFuture = Http().newServerAt("localhost", port).bind(routes ~ hospitalRoutes.route)
+    val bindingFuture = Http().newServerAt("0.0.0.0", port).bind(routes ~ hospitalRoutes.route)
   }
 }

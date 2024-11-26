@@ -74,10 +74,8 @@ services:
 
   pine-valley:
     build:
-      context: ./pine-valley
+      context: ./PineValleyService
     container_name: pine-valley
-    volumes:
-      - ./pine-valley:/app
     networks:
       - kong-net
     ports:
@@ -85,8 +83,10 @@ services:
 
   willow-gardens:
     build:
-      context: ./PineValleyService
+      context: ./willow-gardens
     container_name: willow-gardens
+    volumes:
+      - ./willow-gardens:/app
     networks:
       - kong-net
     ports:

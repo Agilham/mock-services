@@ -19,6 +19,8 @@ lazy val root = (project in file("."))
     assemblyJarName in assembly := "PineValleyService-assembly.jar",
     mainClass in assembly := Some("com.hospital.pinevalley.main"),
     assemblyMergeStrategy in assembly := {
+      case PathList("reference.conf") => MergeStrategy.concat
+      case PathList("application.conf") => MergeStrategy.concat
       case PathList("META-INF", xs @ _*) => MergeStrategy.discard
       case x => MergeStrategy.first
     }
