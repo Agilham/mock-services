@@ -10,12 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type ReqAppointment struct {
-	Patient  string `json:"patient"`
-	Doctor   string `json:"doctor"`
-	Hospital string `json:"hospital"`
-}
-
 type Doctor struct {
 	Name         string `json:"name"`
 	Hospital     string `json:"hospital"`
@@ -34,12 +28,18 @@ type Patient struct {
 }
 
 type Appointment struct {
-	Patient       string `json:"patient"`
+	Patient       Patient `json:"patient"`
 	Doctor        string `json:"doctor"`
 	AppointmentID int    `json:"appointment_id"`
 	Status        string `json:"status"`
 	PaymentID     int    `json:"payment_id"`
 	Fee           int    `json:"fee"`
+}
+
+type ReqAppointment struct {
+	Patient  Patient `json:"patient"`
+	Doctor   string `json:"doctor"`
+	Hospital string `json:"hospital"`
 }
 
 type AppointmentList struct {
@@ -48,9 +48,9 @@ type AppointmentList struct {
 
 // array data dokter
 var dataDokter = []Doctor{
-	{Name: "Dr. John Doe", Hospital: "RS. Jakarta", Category: "Cardiology", Availibility: "8.00 - 15.00", Price: 100000},
-	{Name: "Dr. Jane Doe", Hospital: "RS. Jakarta", Category: "Tooth", Availibility: "8.00 - 16.00", Price: 150000},
-	{Name: "Dr. John Smith", Hospital: "RS. Jakarta", Category: "Child", Availibility: "9.00 - 14.00", Price: 200000},
+	{Name: "Dr. John Doe", Hospital: "Willow-gardens Hospital", Category: "Cardiology", Availibility: "8.00 - 15.00", Price: 100000},
+	{Name: "Dr. Jane Doe", Hospital: "Willow-gardens Hospital", Category: "Tooth", Availibility: "8.00 - 16.00", Price: 150000},
+	{Name: "Dr. John Smith", Hospital: "Willow-gardens Hospital", Category: "Child", Availibility: "9.00 - 14.00", Price: 200000},
 }
 
 // array data pasien
@@ -141,7 +141,7 @@ func AppointmentDiscount(c *gin.Context) {
 	for _, appointment := range dataAppointment {
 		if appointment.AppointmentID == appointmentIDint {
 			for _, pasien := range dataPasien {
-				if appointment.Patient == pasien.Name {
+				if appointment.Patient == pasien {
 					year, _, _ := time.Now().Date()
 					getyeardobpasien, _ := strconv.Atoi(pasien.DOB[6:10])
 					if year-getyeardobpasien > 55 {

@@ -21,11 +21,6 @@ app.add_middleware(
 """
     MODELS
 """
-class ReqAppointment(BaseModel):
-    patient: str
-    doctor: str
-    hospital: str
-
 class Doctor(BaseModel):
     name: str
     hospital: str
@@ -42,21 +37,26 @@ class Patient(BaseModel):
     ssn: str
 
 class Appointment(BaseModel):
-    patient: str
+    patient: Patient
     doctor: str
     appointment_id: int
     status: str
     payment_id: int
     fee: int
 
+class ReqAppointment(BaseModel):
+    patient: Patient
+    doctor: str
+    hospital: str
+
 
 """
     GENERATE SAMPLE DATA
 """
 data_dokter = [
-    Doctor(name="Dr. John Doe", hospital="RS. Jakarta", category="Cardiology", availability="8.00 - 15.00", price=100000),
-    Doctor(name="Dr. Jane Doe", hospital="RS. Jakarta", category="Tooth", availability="8.00 - 16.00", price=150000),
-    Doctor(name="Dr. John Smith", hospital="RS. Jakarta", category="Child", availability="9.00 - 14.00", price=200000),
+    Doctor(name="Dr. John Doe", hospital="Grand-oak Hospital", category="Cardiology", availability="8.00 - 15.00", price=100000),
+    Doctor(name="Dr. Jane Doe", hospital="Grand-oak Hospital", category="Tooth", availability="8.00 - 16.00", price=150000),
+    Doctor(name="Dr. John Smith", hospital="Grand-oak Hospital", category="Child", availability="9.00 - 14.00", price=200000),
 ]
 
 data_pasien = [
