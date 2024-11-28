@@ -46,12 +46,12 @@ class HospitalRoutes(hospitalService: HospitalService) {
             complete(hospitalService.getPatientRecord(SSN))
           }
         } ~
-        path("patient/appointment" / IntNumber / "discount") { id =>
+        path("patient" / "appointment" / IntNumber / "discount") { id =>
           get {
             complete(hospitalService.isEligibleForDiscount(id))
           }
         } ~
-        path("admin" / "newdoctor") {
+        path("admin" / "doctor" / "newdoctor") {
           post {
             entity(as[String]) { data =>
               val doctor = mapper.readValue(data, classOf[Doctor])
