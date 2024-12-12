@@ -42,6 +42,10 @@ services:
       KONG_ADMIN_LISTEN: 0.0.0.0:8001
       KONG_ADMIN_GUI_HOST: 0.0.0.0
       KONG_ADMIN_GUI_PORT: 8002
+      KONG_PLUGINS: bundled,custom-aggregator
+      KONG_LUA_PACKAGE_PATH: "/usr/local/share/lua/5.1/?.lua;;"
+    volumes:
+      - ./custom-aggregator:/usr/local/share/lua/5.1/kong/plugins/custom-aggregator
     networks:
       - kong-net
     ports:

@@ -117,13 +117,9 @@ export default function Home() {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/${selectedDoctor?.category}/reserve`,
+        `http://localhost:8000/kong-gateway/${selectedDoctor?.category}/reserve`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            hospital: chosenHospital,
-          },
           credentials: "include",
           body: JSON.stringify(payload),
         }

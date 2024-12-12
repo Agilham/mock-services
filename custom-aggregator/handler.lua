@@ -1,42 +1,57 @@
-local BasePlugin = require "kong.plugins.base_plugin"
 local http = require "resty.http"
+local cjson = require "cjson.safe"
 
-local CustomAggregator = BasePlugin:extend()
+local CustomAggregator = {
+    VERSION = "1.0.0",
+    PRIORITY = 10,
+}
 
-function CustomAggregator:new()
-    CustomAggregator.super.new(self, "custom-aggregator")
-end
-
-function CustomAggregator:access(config)
-    CustomAggregator.super.access(self)
-
-    -- Create an HTTP client
+local function fetch_service_data(host, path, method, body)
     local httpc = http.new()
-
-    -- Function to fetch data from a service
-    local function fetch_service_data(service_url)
-        local res, err = httpc:request_uri(service_url, { method = "GET" })
-        if not res then
-            kong.log.err("Failed to fetch data from ", service_url, ": ", err)
-            return nil
-        end
-        return res.body
+    local url = "http://" .. host .. (path or "")
+    local res, err = httpc:request_uri(url, {
+        method = method,
+        body = body,
+        headers = { ["Content-Type"] = "application/json" },
+        keepalive = false,
+    })
+    if not res then
+        kong.log.err("Failed to fetch data from ", url, ": ", err)
+        return { error = err }
     end
 
-    -- Fetch responses from all three services
-    local grand_oak_data = fetch_service_data("http://grand-oak:8080/endpoint") or "{}"
-    local pine_valley_data = fetch_service_data("http://pine-valley:8080/endpoint") or "{}"
-    local willow_gardens_data = fetch_service_data("http://willow-gardens:8080/endpoint") or "{}"
+    local parsed_body, parse_err = cjson.decode(res.body)
+    if not parsed_body then
+        kong.log.err("Failed to parse response from ", url, ": ", parse_err)
+        return { error = "Invalid JSON response" }
+    end
 
-    -- Aggregate the responses
-    local aggregated_response = {
-        grand_oak = grand_oak_data,
-        pine_valley = pine_valley_data,
-        willow_gardens = willow_gardens_data
+    return parsed_body
+end
+
+-- Access handler to manage incoming request
+function CustomAggregator:access(config)
+    local services = {
+        grand_oak = { host = "grand-oak", path = "/reserve" },
+        pine_valley = { host = "pine-valley", path = "/api/v1/categories/reserve" },
+        willow_gardens = { host = "willow-gardens", path = "/reserve" },
     }
 
-    -- Send the aggregated response
-    return kong.response.exit(200, aggregated_response)
+    local method = kong.request.get_method()
+    local body = kong.request.get_body()
+
+    local responses = {}
+    for name, service in pairs(services) do
+        responses[name] = fetch_service_data(service.host, service.path, method, body)
+    end
+
+    local aggregated_response = {
+        grand_oak = responses.grand_oak,
+        pine_valley = responses.pine_valley,
+        willow_gardens = responses.willow_gardens,
+    }
+
+    kong.response.exit(200, cjson.encode(aggregated_response))
 end
 
 return CustomAggregator
