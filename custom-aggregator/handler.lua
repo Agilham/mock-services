@@ -29,7 +29,6 @@ local function fetch_service_data(host, path, method, body)
     return parsed_body
 end
 
--- Access handler to manage incoming request
 function CustomAggregator:access(config)
     local services = {
         grand_oak = { host = "grand-oak", path = "/reserve" },
