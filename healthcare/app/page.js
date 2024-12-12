@@ -36,7 +36,7 @@ const doctorData = {
       price: 8000,
     },
     {
-      name: "emeline Fulton",
+      name: "emeline fulton",
       hospital: "pine valley community hospital",
       category: "cardiology",
       availability: "8.00 a.m - 10.00 a.m",
