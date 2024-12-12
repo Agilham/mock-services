@@ -12,7 +12,7 @@ object HospitalUtil {
   // Function to create a new appointment
   def makeNewAppointment(appointmentRequest: AppointmentRequest, hospitalDAO: HospitalDAO): Option[Appointment] = {
     val doctor: Doctor = hospitalDAO.findDoctorByName(appointmentRequest.doctor) match {
-      case Some(doctor) if doctor.hospital.equalsIgnoreCase(appointmentRequest.hospital) => doctor
+      case Some(doctor) => doctor
       case _ => return None
     }
 

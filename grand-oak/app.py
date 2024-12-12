@@ -47,16 +47,15 @@ class Appointment(BaseModel):
 class ReqAppointment(BaseModel):
     patient: Patient
     doctor: str
-    hospital: str
 
 
 """
     GENERATE SAMPLE DATA
 """
 data_dokter = [
-    Doctor(name="Dr. John Doe", hospital="Grand-oak Hospital", category="Cardiology", availability="8.00 - 15.00", price=100000),
-    Doctor(name="Dr. Jane Doe", hospital="Grand-oak Hospital", category="Tooth", availability="8.00 - 16.00", price=150000),
-    Doctor(name="Dr. John Smith", hospital="Grand-oak Hospital", category="Child", availability="9.00 - 14.00", price=200000),
+    Doctor(name="budi", hospital="Grand-oak Hospital", category="cardiology", availability="8.00 - 15.00", price=100000),
+    Doctor(name="arie", hospital="Grand-oak Hospital", category="tooth", availability="8.00 - 16.00", price=150000),
+    Doctor(name="gunawan", hospital="Grand-oak Hospital", category="child", availability="9.00 - 14.00", price=200000),
 ]
 
 data_pasien = [
@@ -74,7 +73,7 @@ data_appointment = []
 @app.post("/{category}/reserve")
 async def reserve(category: str, req: ReqAppointment):
     for dokter in data_dokter:
-        if dokter.category == category and dokter.hospital == req.hospital and dokter.name == req.doctor:
+        if dokter.category == category and dokter.name == req.doctor:
             appointment = Appointment(
                 patient=req.patient,
                 doctor=dokter.name,

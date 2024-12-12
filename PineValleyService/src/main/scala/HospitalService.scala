@@ -45,7 +45,7 @@ class HospitalService {
 
           Future.successful(jsonResponse(StatusCodes.OK, app))
         case None =>
-          Future.successful(jsonResponse(StatusCodes.BadRequest, Status(s"Doctor ${appointmentRequest.doctor} is not available in ${appointmentRequest.hospital}")))
+          Future.successful(jsonResponse(StatusCodes.BadRequest, Status(s"Doctor ${appointmentRequest.doctor} is not available")))
       }
     } else {
       Future.successful(jsonResponse(StatusCodes.BadRequest, Status("Invalid Category")))

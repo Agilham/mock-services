@@ -29,17 +29,16 @@ type Patient struct {
 
 type Appointment struct {
 	Patient       Patient `json:"patient"`
-	Doctor        string `json:"doctor"`
-	AppointmentID int    `json:"appointment_id"`
-	Status        string `json:"status"`
-	PaymentID     int    `json:"payment_id"`
-	Fee           int    `json:"fee"`
+	Doctor        string  `json:"doctor"`
+	AppointmentID int     `json:"appointment_id"`
+	Status        string  `json:"status"`
+	PaymentID     int     `json:"payment_id"`
+	Fee           int     `json:"fee"`
 }
 
 type ReqAppointment struct {
-	Patient  Patient `json:"patient"`
-	Doctor   string `json:"doctor"`
-	Hospital string `json:"hospital"`
+	Patient Patient `json:"patient"`
+	Doctor  string  `json:"doctor"`
 }
 
 type AppointmentList struct {
@@ -48,9 +47,9 @@ type AppointmentList struct {
 
 // array data dokter
 var dataDokter = []Doctor{
-	{Name: "Dr. John Doe", Hospital: "Willow-gardens Hospital", Category: "Cardiology", Availibility: "8.00 - 15.00", Price: 100000},
-	{Name: "Dr. Jane Doe", Hospital: "Willow-gardens Hospital", Category: "Tooth", Availibility: "8.00 - 16.00", Price: 150000},
-	{Name: "Dr. John Smith", Hospital: "Willow-gardens Hospital", Category: "Child", Availibility: "9.00 - 14.00", Price: 200000},
+	{Name: "john doe", Hospital: "Willow-gardens Hospital", Category: "cardiology", Availibility: "8.00 - 15.00", Price: 100000},
+	{Name: "jane doe", Hospital: "Willow-gardens Hospital", Category: "tooth", Availibility: "8.00 - 16.00", Price: 150000},
+	{Name: "john smith", Hospital: "Willow-gardens Hospital", Category: "child", Availibility: "9.00 - 14.00", Price: 200000},
 }
 
 // array data pasien
@@ -74,7 +73,7 @@ func Reserve(c *gin.Context) {
 		return
 	}
 	for _, dokter := range dataDokter {
-		if dokter.Category == category && dokter.Hospital == req.Hospital && dokter.Name == req.Doctor {
+		if dokter.Category == category && dokter.Name == req.Doctor {
 			mu.Lock()
 			appointment := Appointment{
 				Patient:       req.Patient,

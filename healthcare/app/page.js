@@ -6,23 +6,20 @@ import { useState } from "react";
 const doctorData = {
   "grand-oak": [
     {
-      name: "Dr. John Doe",
-      hospital: "Grand-oak Hospital",
-      category: "Cardiology",
+      name: "budi",
+      category: "cardiology",
       availability: "8.00 - 15.00",
       price: 100000,
     },
     {
-      name: "Dr. Jane Doe",
-      hospital: "Grand-oak Hospital",
-      category: "Tooth",
+      name: "arie",
+      category: "tooth",
       availability: "8.00 - 16.00",
       price: 150000,
     },
     {
-      name: "Dr. John Smith",
-      hospital: "Grand-oak Hospital",
-      category: "Child",
+      name: "gunawan",
+      category: "child",
       availability: "9.00 - 14.00",
       price: 200000,
     },
@@ -30,38 +27,33 @@ const doctorData = {
   "pine-valley": [
     {
       name: "seth mears",
-      hospital: "pine valley community hospital",
-      category: "Surgery",
+      category: "surgery",
       availability: "3.00 p.m - 5.00 p.m",
       price: 8000,
     },
     {
       name: "emeline fulton",
-      hospital: "pine valley community hospital",
-      category: "Cardiology",
+      category: "cardiology",
       availability: "8.00 a.m - 10.00 a.m",
       price: 4000,
     },
   ],
   "willow-gardens": [
     {
-      name: "Dr. John Doe",
-      hospital: "Willow-gardens Hospital",
-      category: "Cardiology",
+      name: "john doe",
+      category: "cardiology",
       availability: "8.00 - 15.00",
       price: 100000,
     },
     {
-      name: "Dr. Jane Doe",
-      hospital: "Willow-gardens Hospital",
-      category: "Tooth",
+      name: "jane doe",
+      category: "tooth",
       availability: "8.00 - 16.00",
       price: 150000,
     },
     {
-      name: "Dr. John Smith",
-      hospital: "Willow-gardens Hospital",
-      category: "Child",
+      name: "john smith",
+      category: "child",
       availability: "9.00 - 14.00",
       price: 200000,
     },
@@ -72,6 +64,7 @@ export default function Home() {
   const [doctors, setDoctors] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [reservationStatus, setReservationStatus] = useState(null);
 
   const fetchDoctors = () => {
     const allDoctors = [
@@ -121,16 +114,30 @@ export default function Home() {
         }
       );
 
+      const textResponse = await response.text();
+      console.log("Raw Response:", textResponse);
+
       if (!response.ok) {
-        const errorDetails = await response.json();
-        throw new Error(errorDetails.message || "Failed to book appointment");
+        throw new Error(`HTTP Error: ${response.statusText}`);
       }
 
-      alert("Appointment booked successfully!");
-      closePopup();
+      const responseData = JSON.parse(textResponse);
+
+      if (!responseData) {
+        throw new Error("Invalid JSON response");
+      }
+
+      setReservationStatus({
+        success: true,
+        hospitalStatuses: responseData,
+      });
     } catch (error) {
-      console.error("Error:", error);
-      alert(`Error booking appointment: ${error.message}`);
+      console.error("Error during API call:", error);
+
+      setReservationStatus({
+        success: false,
+        message: `Error booking appointment: ${error.message}`,
+      });
     }
   };
 
@@ -154,13 +161,11 @@ export default function Home() {
                 marginBottom: "16px",
               }}
             >
-              <strong>
-                {doctor.name}
-              </strong>{" "}
-              | {doctor.category} | {doctor.availability} | ${doctor.price}{" "}
+              <strong>{doctor.name}</strong> | {doctor.category} |{" "}
+              {doctor.availability} | ${doctor.price}{" "}
               <div className={styles.ctas} style={{ marginLeft: "16px" }}>
                 <a
-                  className={styles.secondary}
+                  className={styles.primary}
                   onClick={() => openPopup(doctor)}
                   role="button"
                   tabIndex={0}
@@ -175,10 +180,7 @@ export default function Home() {
         {showPopup && (
           <div className={styles.popup}>
             <div className={styles.popupContent}>
-              <h3>
-                Book Appointment with {selectedDoctor?.name} (
-                {selectedDoctor?.hospital})
-              </h3>
+              <h3>Book Appointment with {selectedDoctor?.name}</h3>
               <form onSubmit={submitForm}>
                 <div className={styles.popupActions}>
                   <label htmlFor="name">Name:</label>
@@ -223,6 +225,45 @@ export default function Home() {
                   </button>
                 </div>
               </form>
+
+              {reservationStatus && reservationStatus.hospitalStatuses && (
+                <div style={{ marginTop: "16px" }}>
+                  {Object.keys(reservationStatus.hospitalStatuses).map(
+                    (hospital) => {
+                      const status =
+                        reservationStatus.hospitalStatuses[hospital];
+                      let message = "";
+
+                      if (status.error) {
+                        message = `Error: ${status.error}`;
+                      } else if (
+                        status.status === "Reserved" ||
+                        status.confirmed
+                      ) {
+                        message = `Reservation successful with Dr. ${
+                          status.doctor || selectedDoctor?.name
+                        } at ${selectedDoctor?.hospital}. Appointment ID: ${
+                          status.appointment_id || status.appointmentNumber
+                        }. Fee: $${status.fee}`;
+                      } else if (
+                        status.detail ||
+                        status.status === "Invalid Category"
+                      ) {
+                        message = `Error: ${status.detail || status.status}`;
+                      }
+
+                      return (
+                        <div key={hospital} style={{ marginBottom: "12px" }}>
+                          <strong>
+                            {hospital.replace("_", " ").toUpperCase()}:
+                          </strong>{" "}
+                          {message}
+                        </div>
+                      );
+                    }
+                  )}
+                </div>
+              )}
             </div>
           </div>
         )}
