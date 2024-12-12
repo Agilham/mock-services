@@ -155,7 +155,7 @@ export default function Home() {
               }}
             >
               <strong>
-                {doctor.name} ({doctor.hospital})
+                {doctor.name}
               </strong>{" "}
               | {doctor.category} | {doctor.availability} | ${doctor.price}{" "}
               <div className={styles.ctas} style={{ marginLeft: "16px" }}>
