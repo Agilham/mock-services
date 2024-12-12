@@ -31,14 +31,14 @@ const doctorData = {
     {
       name: "seth mears",
       hospital: "pine valley community hospital",
-      category: "surgery",
+      category: "Surgery",
       availability: "3.00 p.m - 5.00 p.m",
       price: 8000,
     },
     {
       name: "emeline fulton",
       hospital: "pine valley community hospital",
-      category: "cardiology",
+      category: "Cardiology",
       availability: "8.00 a.m - 10.00 a.m",
       price: 4000,
     },
@@ -73,8 +73,13 @@ export default function Home() {
   const [showPopup, setShowPopup] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
 
-  const fetchDoctors = (hospital) => {
-    setDoctors(doctorData[hospital] || []);
+  const fetchDoctors = () => {
+    const allDoctors = [
+      ...doctorData["grand-oak"],
+      ...doctorData["pine-valley"],
+      ...doctorData["willow-gardens"],
+    ];
+    setDoctors(allDoctors);
   };
 
   const openPopup = (doctor) => {
@@ -99,15 +104,6 @@ export default function Home() {
       phone: formData.get("phone"),
       email: formData.get("email"),
     };
-
-    let chosenHospital = "";
-    if (selectedDoctor?.hospital == "Grand-oak Hospital") {
-      chosenHospital = "grand-oak";
-    } else if (selectedDoctor?.hospital == "pine valley community hospital") {
-      chosenHospital = "pine-valley";
-    } else if (selectedDoctor?.hospital == "Willow-gardens Hospital") {
-      chosenHospital = "willow-gardens";
-    }
 
     const payload = {
       hospital: selectedDoctor?.hospital,
@@ -138,42 +134,14 @@ export default function Home() {
     }
   };
 
+  useState(() => {
+    fetchDoctors();
+  }, []);
+
   return (
     <div className={styles.page}>
       <main className={styles.main}>
         <h1>Healthcare App</h1>
-
-        <ol>
-          <li>Select a hospital to view its available doctors.</li>
-          <li>Select a doctor and fill out the form to book an appointment.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.secondary}
-            onClick={() => fetchDoctors("grand-oak")}
-            role="button"
-            tabIndex={0}
-          >
-            Grand Oak Hospital
-          </a>
-          <a
-            className={styles.secondary}
-            onClick={() => fetchDoctors("pine-valley")}
-            role="button"
-            tabIndex={0}
-          >
-            Pine Valley Hospital
-          </a>
-          <a
-            className={styles.secondary}
-            onClick={() => fetchDoctors("willow-gardens")}
-            role="button"
-            tabIndex={0}
-          >
-            Willow Gardens Hospital
-          </a>
-        </div>
 
         <ul>
           {doctors.map((doctor, index) => (
@@ -192,7 +160,7 @@ export default function Home() {
               | {doctor.category} | {doctor.availability} | ${doctor.price}{" "}
               <div className={styles.ctas} style={{ marginLeft: "16px" }}>
                 <a
-                  className={styles.primary}
+                  className={styles.secondary}
                   onClick={() => openPopup(doctor)}
                   role="button"
                   tabIndex={0}
@@ -243,15 +211,15 @@ export default function Home() {
                 </div>
 
                 <div className={styles.popupActions}>
-                  <button type="submit" className={styles.primary}>
-                    Submit
-                  </button>
                   <button
                     type="button"
                     className={styles.primary}
                     onClick={closePopup}
                   >
                     Cancel
+                  </button>
+                  <button type="submit" className={styles.primary}>
+                    Submit
                   </button>
                 </div>
               </form>
